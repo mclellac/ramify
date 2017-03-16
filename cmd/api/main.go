@@ -9,7 +9,7 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 
-	"github.com/mclellac/ratify/services/auth"
+	"github.com/mclellac/ramify/services/auth"
 
 	uuid "github.com/nu7hatch/gouuid"
 
