@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	_ "expvar"
 	"flag"
 	"log"
@@ -19,52 +18,52 @@ import (
 )
 
 type response struct {
-	Type     string    `json:"type"`
-	Features []feature `json:"features"`
+	Type string `json:"type"`
+	//	Features []feature `json:"features"`
 }
 
-type feature struct {
-	ID         string `json:"id"`
-	Type       string `json:"type"`
-	Properties struct {
-		Name        string `json:"name"`
-		PhoneNumber string `json:"phone_number"`
-	} `json:"properties"`
-	Geometry struct {
-		Type        string    `json:"type"`
-		Coordinates []float32 `json:"coordinates"`
-	} `json:"geometry"`
-}
+//type feature struct {
+//	ID         string `json:"id"`
+//	Type       string `json:"type"`
+//	Properties struct {
+//		Name        string `json:"name"`
+//		PhoneNumber string `json:"phone_number"`
+//	} `json:"properties"`
+//	Geometry struct {
+//		Type        string    `json:"type"`
+//		Coordinates []float32 `json:"coordinates"`
+//	} `json:"geometry"`
+//}
 
 type client struct {
 	auth.AuthClient
-	geo.GeoClient
-	profile.ProfileClient
-	rate.RateClient
+	//	geo.GeoClient
+	//	profile.ProfileClient
+	//	rate.RateClient
 }
 
-func geoJSONResponse(hotels []*profile.Hotel) response {
-	r := response{
-		Type: "FeatureCollection",
-	}
-
-	for _, hotel := range hotels {
-		f := feature{
-			Type: "Feature",
-			ID:   hotel.Id,
-		}
-		f.Properties.Name = hotel.Name
-		f.Properties.PhoneNumber = hotel.PhoneNumber
-		f.Geometry.Type = "Point"
-		f.Geometry.Coordinates = []float32{
-			hotel.Address.Lon,
-			hotel.Address.Lat,
-		}
-		r.Features = append(r.Features, f)
-	}
-
-	return r
-}
+//func geoJSONResponse(hotels []*profile.Hotel) response {
+//	r := response{
+//		Type: "FeatureCollection",
+//	}
+//
+//	for _, hotel := range hotels {
+//		f := feature{
+//			Type: "Feature",
+//			ID:   hotel.Id,
+//		}
+//		f.Properties.Name = hotel.Name
+//		f.Properties.PhoneNumber = hotel.PhoneNumber
+//		f.Geometry.Type = "Point"
+//		f.Geometry.Coordinates = []float32{
+//			hotel.Address.Lon,
+//			hotel.Address.Lat,
+//		}
+//		r.Features = append(r.Features, f)
+//	}
+//
+//	return r
+//}
 
 func requestHandler(c client, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -86,85 +85,85 @@ func requestHandler(c client, w http.ResponseWriter, r *http.Request) {
 	}
 
 	// checkin and checkout date query params
-	inDate, outDate := r.URL.Query().Get("inDate"), r.URL.Query().Get("outDate")
-	if inDate == "" || outDate == "" {
-		http.Error(w, "Please specify inDate/outDate params", http.StatusBadRequest)
-		return
-	}
+	//	inDate, outDate := r.URL.Query().Get("inDate"), r.URL.Query().Get("outDate")
+	//	if inDate == "" || outDate == "" {
+	//		http.Error(w, "Please specify inDate/outDate params", http.StatusBadRequest)
+	//		return
+	//	}
 
 	// finds nearby hotels
 	// TODO(hw): use lat/lon from request params
-	nearby, err := c.Nearby(ctx, &geo.Request{
-		Lat: 37.7749,
-		Lon: -122.4194,
-	})
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	//	nearby, err := c.Nearby(ctx, &geo.Request{
+	//		Lat: 37.7749,
+	//		Lon: -122.4194,
+	//	})
+	//if err != nil {
+	//	http.Error(w, err.Error(), http.StatusInternalServerError)
+	//	return
+	//}
 
 	// make reqeusts for profiles and rates
-	profileCh := getHotelProfiles(c, ctx, nearby.HotelIds)
-	rateCh := getRatePlans(c, ctx, nearby.HotelIds, inDate, outDate)
+	//	profileCh := getHotelProfiles(c, ctx, nearby.HotelIds)
+	//	rateCh := getRatePlans(c, ctx, nearby.HotelIds, inDate, outDate)
 
 	// wait on profiles reply
-	profileReply := <-profileCh
-	if err := profileReply.err; err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	//	profileReply := <-profileCh
+	//	if err := profileReply.err; err != nil {
+	//		http.Error(w, err.Error(), http.StatusInternalServerError)
+	//		return
+	//	}
 
 	// wait on rates reply
-	rateReply := <-rateCh
-	if err := rateReply.err; err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	//	rateReply := <-rateCh
+	//	if err := rateReply.err; err != nil {
+	//		http.Error(w, err.Error(), http.StatusInternalServerError)
+	//		return
+	//	}
 
 	// GeoJSON response
-	json.NewEncoder(w).Encode(
-		geoJSONResponse(profileReply.hotels),
-	)
+	//	json.NewEncoder(w).Encode(
+	//		geoJSONResponse(profileReply.hotels),
+	//	)
 }
 
-type rateResults struct {
-	ratePlans []*rate.RatePlan
-	err       error
-}
+//type rateResults struct {
+//	ratePlans []*rate.RatePlan
+//	err       error
+//}
 
-func getRatePlans(c client, ctx context.Context, hotelIDs []string, inDate string, outDate string) chan rateResults {
-	ch := make(chan rateResults, 1)
-
-	go func() {
-		res, err := c.GetRates(ctx, &rate.Request{
-			HotelIds: hotelIDs,
-			InDate:   inDate,
-			OutDate:  outDate,
-		})
-		ch <- rateResults{res.RatePlans, err}
-	}()
-
-	return ch
-}
-
-type profileResults struct {
-	hotels []*profile.Hotel
-	err    error
-}
-
-func getHotelProfiles(c client, ctx context.Context, hotelIDs []string) chan profileResults {
-	ch := make(chan profileResults, 1)
-
-	go func() {
-		res, err := c.GetProfiles(ctx, &profile.Request{
-			HotelIds: hotelIDs,
-			Locale:   "en",
-		})
-		ch <- profileResults{res.Hotels, err}
-	}()
-
-	return ch
-}
+//func getRatePlans(c client, ctx context.Context, hotelIDs []string, inDate string, outDate string) chan rateResults {
+//	ch := make(chan rateResults, 1)
+//
+//	go func() {
+//		res, err := c.GetRates(ctx, &rate.Request{
+//			HotelIds: hotelIDs,
+//			InDate:   inDate,
+//			OutDate:  outDate,
+//		})
+//		ch <- rateResults{res.RatePlans, err}
+//	}()
+//
+//	return ch
+//}
+//
+//type profileResults struct {
+//	hotels []*profile.Hotel
+//	err    error
+//}
+//
+//func getHotelProfiles(c client, ctx context.Context, hotelIDs []string) chan profileResults {
+//	ch := make(chan profileResults, 1)
+//
+//	go func() {
+//		res, err := c.GetProfiles(ctx, &profile.Request{
+//			HotelIds: hotelIDs,
+//			Locale:   "en",
+//		})
+//		ch <- profileResults{res.Hotels, err}
+//	}()
+//
+//	return ch
+//}
 
 // mustDial ensures a tcp connection to specified address.
 func mustDial(addr *string) *grpc.ClientConn {
@@ -185,20 +184,20 @@ func main() {
 
 	// ports for grpc connections (default uses docker-compose links)
 	var (
-		port        = flag.String("port", "8080", "The server port")
-		authAddr    = flag.String("auth", "auth:8080", "The Auth server address in the format of host:port")
-		geoAddr     = flag.String("geo", "geo:8080", "The Geo server address in the format of host:port")
-		profileAddr = flag.String("profile", "profile:8080", "The Pofile server address in the format of host:port")
-		rateAddr    = flag.String("rate", "rate:8080", "The Rate Code server address in the format of host:port")
+		port     = flag.String("port", "8080", "The server port")
+		authAddr = flag.String("auth", "auth:8080", "The Auth server address in the format of host:port")
+		//geoAddr     = flag.String("geo", "geo:8080", "The Geo server address in the format of host:port")
+		//profileAddr = flag.String("profile", "profile:8080", "The Pofile server address in the format of host:port")
+		//rateAddr    = flag.String("rate", "rate:8080", "The Rate Code server address in the format of host:port")
 	)
 	flag.Parse()
 
 	// client with all grpc connections
 	c := client{
-		AuthClient:    auth.NewAuthClient(mustDial(authAddr)),
-		GeoClient:     geo.NewGeoClient(mustDial(geoAddr)),
-		ProfileClient: profile.NewProfileClient(mustDial(profileAddr)),
-		RateClient:    rate.NewRateClient(mustDial(rateAddr)),
+		AuthClient: auth.NewAuthClient(mustDial(authAddr)),
+		//GeoClient:     geo.NewGeoClient(mustDial(geoAddr)),
+		//ProfileClient: profile.NewProfileClient(mustDial(profileAddr)),
+		//RateClient:    rate.NewRateClient(mustDial(rateAddr)),
 	}
 
 	// handle http requests
