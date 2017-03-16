@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	pb "github.com/mclellac/ok/protos/post"
+	pb "github.com/mclellac/ramify/services/post"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-yaml/yaml"
