@@ -48,9 +48,9 @@ format:
 build:
 	@echo "$(GREEN)>>> Building$(RESET)"
 	go build -o ./ramify        ./cmd/client
-	go build -o ./ramify-postd  ./cmd/postd
+	go build -o ./ramify-post   ./cmd/post
 	go build -o ./ramify-api    ./cmd/api
-	go build -o ./ramify-auth 	./cmd/auth
+	go build -o ./ramify-auth   ./cmd/auth
 
 clean:
 	@echo "$(GREEN)>>> Cleaning$(RESET)"
@@ -66,13 +66,13 @@ install:
 lint:
 	@echo "$(GREEN)>>> Linting$(RESET)"
 	$(GOPATH)/bin/golint ./cmd/ramify
-	$(GOPATH)/bin/golint ./cmd/postd	
+	$(GOPATH)/bin/golint ./cmd/post	
 	$(GOPATH)/bin/golint ./cmd/auth
 	$(GOPATH)/bin/golint ./cmd/api
 
 vet:
 	go vet ./cmd/ramify/
-	go vet ./cmd/postd/	
+	go vet ./cmd/post/	
 	go vet ./cmd/api/
 	go vet ./cmd/auth/
 
