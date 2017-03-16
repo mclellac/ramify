@@ -5,7 +5,6 @@
 *.db
 /ramify*
 /test*
-
 # configuration files
 *.yaml
 *.log

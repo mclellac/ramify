@@ -49,24 +49,31 @@ build:
 	@echo "$(GREEN)>>> Building$(RESET)"
 	go build -o ./ramify        ./cmd/client
 	go build -o ./ramify-postd  ./cmd/postd
+	go build -o ./ramify-api    ./cmd/api
+	go build -o ./ramify-auth 	./cmd/auth
 
 clean:
 	@echo "$(GREEN)>>> Cleaning$(RESET)"
 	go clean -i -r -x
-	rm ./ramify && rm ./ramify-postd
+	rm ./ramify && rm ./ramify-postd && rm ./ramify-auth && rm ./ramify-api
 
 install:
 	@echo "$(GREEN)>>> Installing$(RESET)"
-	install ./ramify-postd $(GOPATH)/bin
-	install ./ramify       $(GOPATH)/bin
-
+	install ./ramify-postd	$(GOPATH)/bin
+	install ./ramify 		$(GOPATH)/bin
+	install ./ramify-api	$(GOPATH)/bin
+	install ./ramify-auth	$(GOPATH)/bin
 lint:
 	@echo "$(GREEN)>>> Linting$(RESET)"
-	$(GOPATH)/bin/golint ./cmd/client
-	$(GOPATH)/bin/golint ./cmd/postd
+	$(GOPATH)/bin/golint ./cmd/ramify
+	$(GOPATH)/bin/golint ./cmd/postd	
+	$(GOPATH)/bin/golint ./cmd/auth
+	$(GOPATH)/bin/golint ./cmd/api
 
 vet:
-	go vet ./cmd/client/
-	go vet ./cmd/postd/
+	go vet ./cmd/ramify/
+	go vet ./cmd/postd/	
+	go vet ./cmd/api/
+	go vet ./cmd/auth/
 
 all: format dep proto vet build
