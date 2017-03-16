@@ -9,8 +9,8 @@ import (
 	"net"
 	"strings"
 
-	"github.com/harlow/go-micro-services/data"
-	"github.com/harlow/go-micro-services/pb/auth"
+	"github.com/mclellac/ramify/data"
+	"github.com/mclellac/ramify/services/auth"
 
 	"golang.org/x/net/context"
 	"golang.org/x/net/trace"
