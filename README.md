@@ -1,4 +1,4 @@
-## Ramify is a microservice test project
+# Ramify is a microservice test project
 
 # Build
 ```bash 
@@ -25,7 +25,7 @@ $ ./ramify-api -auth $AUTH_HOST:3000 -post $POST_HOST:3001
 
 The default ports for the auth and post service are 3000 and 3001. You can change them by passing the port number you wish for the service to run on as an argument when starting the service.
 
-###Example:
+Example:
 ```bash
 $ ./ramify-auth 5000&
 ```
