@@ -9,7 +9,7 @@ import (
 	_ "net/http/pprof"
 
 	"github.com/mclellac/ramify/services/auth"
-	//"github.com/mclellac/ramify/services/post"
+	"github.com/mclellac/ramify/services/post"
 
 	uuid "github.com/nu7hatch/gouuid"
 
@@ -196,7 +196,7 @@ func main() {
 	// client with all grpc connections
 	c := client{
 		AuthClient: auth.NewAuthClient(mustDial(authAddr)),
-		postClient: post.NewGeoClient(mustDial(postAddr)),
+		PostClient: post.NewPostClient(mustDial(postAddr)),
 		//ProfileClient: profile.NewProfileClient(mustDial(profileAddr)),
 		//RateClient:    rate.NewRateClient(mustDial(rateAddr)),
 	}

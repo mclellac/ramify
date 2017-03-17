@@ -44,12 +44,12 @@ type Post struct {
 }
 
 type postService struct {
-	post []*pb.Post
+	post []*pb.Content
 	m    sync.Mutex
 	DB   *gorm.DB
 }
 
-func (ps *postService) Delete(c context.Context, req *pb.Post) (*pb.Response, error) {
+func (ps *postService) Delete(c context.Context, req *pb.Content) (*pb.Response, error) {
 	ps.m.Lock()
 	defer ps.m.Unlock()
 
@@ -67,7 +67,7 @@ func (ps *postService) Delete(c context.Context, req *pb.Post) (*pb.Response, er
 	}, nil
 }
 
-func (ps *postService) Add(c context.Context, req *pb.Post) (*pb.Response, error) {
+func (ps *postService) Add(c context.Context, req *pb.Content) (*pb.Response, error) {
 	ps.m.Lock()
 	defer ps.m.Unlock()
 	ps.post = append(ps.post, req)
@@ -80,8 +80,8 @@ func (ps *postService) Add(c context.Context, req *pb.Post) (*pb.Response, error
 	}, nil
 }
 
-func (ps *postService) List(req *pb.Request, stream pb.Service_ListServer) error {
-	var post []*pb.Post
+func (ps *postService) List(req *pb.Request, stream pb.Post_ListServer) error {
+	var post []*pb.Content
 
 	ps.m.Lock()
 	defer ps.m.Unlock()
@@ -154,7 +154,7 @@ func main() {
 	}
 	s := grpc.NewServer()
 
-	pb.RegisterServiceServer(s, &postService{DB: db})
+	pb.RegisterPostServer(s, &postService{DB: db})
 	fmt.Println("Server started on port", conf.Port)
 	s.Serve(lis)
 }
