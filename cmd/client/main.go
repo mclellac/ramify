@@ -21,8 +21,8 @@ const (
 	defaultNum = 0
 )
 
-func add(client pb.ServiceClient, title string, article string) error {
-	post := &pb.Post{
+func add(client pb.PostClient, title string, article string) error {
+	post := &pb.Content{
 		Title:   title,
 		Article: article,
 	}
@@ -32,8 +32,8 @@ func add(client pb.ServiceClient, title string, article string) error {
 	return err
 }
 
-func delete(client pb.ServiceClient, id int64) error {
-	post := &pb.Post{
+func delete(client pb.PostClient, id int64) error {
+	post := &pb.Content{
 		Id: id,
 	}
 
@@ -46,7 +46,7 @@ func delete(client pb.ServiceClient, id int64) error {
 	return nil
 }
 
-func list(client pb.ServiceClient) error {
+func list(client pb.PostClient) error {
 	stream, err := client.List(context.Background(), new(pb.Request))
 	if err != nil {
 		return err
@@ -70,7 +70,7 @@ func main() {
 		grpclog.Fatalf("failed to dial: %v", err)
 	}
 	defer conn.Close()
-	client := pb.NewServiceClient(conn)
+	client := pb.NewPostClient(conn)
 
 	app := cli.NewApp()
 	app.Name = "ramify"
@@ -86,7 +86,7 @@ func main() {
 			Name:        "add",
 			Usage:       "Create a new post.",
 			Description: "Adds new article to the database.\n\nEXAMPLE:\n   $ ramify add \"Test Title\" \"Test article body...\"",
-			ArgsUsage:   "[\"post title\"] [\"post body\"]",
+			ArgsUsage:   "[\"title\"] [\"article\"]",
 			Action: func(c *cli.Context) error {
 				if len(c.Args()) != 2 {
 					fmt.Println("You might want to double check your command there.")
@@ -104,14 +104,14 @@ func main() {
 		{
 			Name:        "ls",
 			Usage:       "List all posts.",
-			Description: "Displays the IDs and titles of posts on the server.\n\nEXAMPLE:\n   $ ramify ls",
+			Description: "Displays the IDs and titles of articles on the server.\n\nEXAMPLE:\n   $ ramify ls",
 			Action: func(c *cli.Context) error {
 				return list(client)
 			},
 		},
 		{
 			Name:        "rm",
-			Usage:       "Delete a post.",
+			Usage:       "Delete an article.",
 			Description: "Remove the post with the supplied ID from the server.\n\nEXAMPLE:\n   $ ramify rm 2",
 			ArgsUsage:   "[ID]",
 			Action: func(c *cli.Context) error {

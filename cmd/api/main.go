@@ -9,6 +9,7 @@ import (
 	_ "net/http/pprof"
 
 	"github.com/mclellac/ramify/services/auth"
+	//"github.com/mclellac/ramify/services/post"
 
 	uuid "github.com/nu7hatch/gouuid"
 
@@ -37,7 +38,7 @@ type response struct {
 
 type client struct {
 	auth.AuthClient
-	//	geo.GeoClient
+	post.PostClient
 	//	profile.ProfileClient
 	//	rate.RateClient
 }
@@ -185,8 +186,8 @@ func main() {
 	// ports for grpc connections (default uses docker-compose links)
 	var (
 		port     = flag.String("port", "8080", "The server port")
-		authAddr = flag.String("auth", "auth:8080", "The Auth server address in the format of host:port")
-		//geoAddr     = flag.String("geo", "geo:8080", "The Geo server address in the format of host:port")
+		authAddr = flag.String("auth", "auth:3000", "The Auth server address in the format of host:port")
+		postAddr = flag.String("post", "post:3001", "The Post server address in the format of host:port")
 		//profileAddr = flag.String("profile", "profile:8080", "The Pofile server address in the format of host:port")
 		//rateAddr    = flag.String("rate", "rate:8080", "The Rate Code server address in the format of host:port")
 	)
@@ -195,7 +196,7 @@ func main() {
 	// client with all grpc connections
 	c := client{
 		AuthClient: auth.NewAuthClient(mustDial(authAddr)),
-		//GeoClient:     geo.NewGeoClient(mustDial(geoAddr)),
+		postClient: post.NewGeoClient(mustDial(postAddr)),
 		//ProfileClient: profile.NewProfileClient(mustDial(profileAddr)),
 		//RateClient:    rate.NewRateClient(mustDial(rateAddr)),
 	}

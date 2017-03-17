@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package proto;
+package post;
 
-service Service {
-    rpc Add(Post)       returns (Response) {}
-    rpc Delete(Post)    returns (Response) {}
-    rpc List(Request)   returns (stream Post) {};
+service Post {
+    rpc Add(Content)        returns (Response) {}
+    rpc Delete(Content)     returns (Response) {}
+    rpc List(Request)       returns (stream Content) {};
 }
 
 message Response {
@@ -16,7 +16,7 @@ message Response {
 
 message Request {}
 
-message Post {
+message Content {
     int64  id       = 1;
     int32  created  = 2;
     string title    = 3;
