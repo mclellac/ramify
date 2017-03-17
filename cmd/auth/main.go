@@ -68,6 +68,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+	fmt.Sprintf("Server started on port :%d", port)
 
 	// grpc server
 	srv := grpc.NewServer()

@@ -49,7 +49,7 @@ type postService struct {
 	DB   *gorm.DB
 }
 
-func (ps *postService) Delete(c context.Context, req *pb.Content) (*pb.Response, error) {
+func (ps *postService) Delete(ctx context.Context, req *pb.Content) (*pb.Response, error) {
 	ps.m.Lock()
 	defer ps.m.Unlock()
 
@@ -67,7 +67,7 @@ func (ps *postService) Delete(c context.Context, req *pb.Content) (*pb.Response,
 	}, nil
 }
 
-func (ps *postService) Add(c context.Context, req *pb.Content) (*pb.Response, error) {
+func (ps *postService) Add(ctx context.Context, req *pb.Content) (*pb.Response, error) {
 	ps.m.Lock()
 	defer ps.m.Unlock()
 	ps.post = append(ps.post, req)
