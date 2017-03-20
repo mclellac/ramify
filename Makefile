@@ -36,8 +36,7 @@ proto:
 		exit 1; \
 	fi
 	go get -u -v github.com/golang/protobuf/protoc-gen-go
-	# Use $$dir as the root for all proto files in the same directory
-	for dir in $$(git ls-files '*.proto' | xargs -n1 dirname | uniq); do \
+	@for dir in $$(git ls-files '*.proto' | xargs -n1 dirname | uniq); do \
 		protoc -I $$dir --go_out=plugins=grpc:$$dir $$dir/*.proto; \
 	done
 
@@ -65,7 +64,7 @@ install:
 	install ./ramify-auth	$(GOPATH)/bin
 lint:
 	@echo "$(GREEN)>>> Linting$(RESET)"
-	$(GOPATH)/bin/golint ./cmd/ramify
+	$(GOPATH)/bin/golint ./cmd/client
 	$(GOPATH)/bin/golint ./cmd/post	
 	$(GOPATH)/bin/golint ./cmd/auth
 	$(GOPATH)/bin/golint ./cmd/api
