@@ -19,17 +19,12 @@ endif
 
 default: build
 
-dep:
+dep:	## Install dependencies needed for this application.
 	@echo "$(GREEN)>>> Installing dependencies$(RESET)"
 	@go get -u -d -v ./...
 	@echo $(DEPS) | xargs -n1 go get -d
 
-update:
-	@echo "$(GREEN)>>> Updating all dependencies$(RESET)"
-	@go get -d -u ./...
-	@echo $(DEPS) | xargs -n1 go get -d -u
-
-proto:
+proto:	## Generate the protocol buffers with protoc.
 	@echo "$(GREEN)>>> Generating protocol buffers$(RESET)"
 	@if ! which protoc > /dev/null; then \
 		echo "$(WARN)Error: protoc not found$(GREEN)" >&2; \
@@ -40,39 +35,45 @@ proto:
 		protoc -I $$dir --go_out=plugins=grpc:$$dir $$dir/*.proto; \
 	done
 
-format:
+format:	## Format source files with gofmt.
 	@echo "$(GREEN)>>> Formatting$(RESET)"
 	$(foreach ENTRY,$(PACKAGES),$(GOFMT) $(GOPATH)/src/$(ENTRY);)
 
-build:
+build:	## Build binaries.
 	@echo "$(GREEN)>>> Building$(RESET)"
 	go build -o ./ramify        ./cmd/client
 	go build -o ./ramify-post   ./cmd/post
 	go build -o ./ramify-api    ./cmd/api
 	go build -o ./ramify-auth   ./cmd/auth
 
-clean:
+clean:  ## Remove previous builds binaries.
 	@echo "$(GREEN)>>> Cleaning$(RESET)"
 	go clean -i -r -x
-	rm ./ramify && rm ./ramify-postd && rm ./ramify-auth && rm ./ramify-api
+	rm ./ramify && rm ./ramify-post && rm ./ramify-auth && rm ./ramify-api
 
-install:
+install:	## Install binaries to $GOPATH/bin.
 	@echo "$(GREEN)>>> Installing$(RESET)"
-	install ./ramify-postd	$(GOPATH)/bin
-	install ./ramify 		$(GOPATH)/bin
+	install ./ramify-post	$(GOPATH)/bin
+	install ./ramify 	$(GOPATH)/bin
 	install ./ramify-api	$(GOPATH)/bin
 	install ./ramify-auth	$(GOPATH)/bin
-lint:
+
+lint:	## Run linter on source directories.
 	@echo "$(GREEN)>>> Linting$(RESET)"
 	$(GOPATH)/bin/golint ./cmd/client
 	$(GOPATH)/bin/golint ./cmd/post	
 	$(GOPATH)/bin/golint ./cmd/auth
 	$(GOPATH)/bin/golint ./cmd/api
 
-vet:
+vet:	## Run go vet on source directories.
 	go vet ./cmd/ramify/
 	go vet ./cmd/post/	
 	go vet ./cmd/api/
 	go vet ./cmd/auth/
 
 all: format dep proto vet build
+
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+.DEFAULT_GOAL := help
