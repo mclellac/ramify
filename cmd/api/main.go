@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "expvar"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	_ "net/http/pprof"
@@ -11,11 +12,8 @@ import (
 	"github.com/mclellac/ramify/services/auth"
 	"github.com/mclellac/ramify/services/post"
 
-	uuid "github.com/nu7hatch/gouuid"
-
 	"golang.org/x/net/trace"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 )
 
 type response struct {
@@ -75,15 +73,16 @@ func requestHandler(c client, w http.ResponseWriter, r *http.Request) {
 
 	// context
 	ctx := context.Background()
-	ctx = trace.NewContext(ctx, tr)
+	fmt.Println(ctx)
+	//ctx = trace.NewContext(ctx, tr)
 
 	// add a unique request id to context
-	if traceID, err := uuid.NewV4(); err == nil {
-		ctx = metadata.NewContext(ctx, metadata.Pairs(
-			"traceID", traceID.String(),
-			"fromName", "api.v1",
-		))
-	}
+	//if traceID, err := uuid.NewV4(); err == nil {
+	//	ctx = metadata.NewContext(ctx, metadata.Pairs(
+	//		"traceID", traceID.String(),
+	//		"fromName", "api.v1",
+	//	))
+	//}
 
 	// checkin and checkout date query params
 	//	inDate, outDate := r.URL.Query().Get("inDate"), r.URL.Query().Get("outDate")

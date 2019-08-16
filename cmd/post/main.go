@@ -10,9 +10,9 @@ import (
 
 	pb "github.com/mclellac/ramify/services/post"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-yaml/yaml"
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
@@ -118,10 +118,10 @@ func (c *Config) Init() {
 func main() {
 	conf.Init()
 
-	connectionString := conf.DBUsername + ":" +
-		conf.DBPassword + "@tcp(" +
-		conf.DBHostname + ":3306)/" +
-		conf.DBName + "?charset=utf8&parseTime=True&loc=Local"
+	connectionString := "postgres://" + conf.DBUsername + ":" +
+		conf.DBPassword + "@" +
+		conf.DBHostname + ":5432/" +
+		conf.DBName + "?sslmode=disable"
 
 	db, err := gorm.Open(conf.TypeDB, connectionString)
 	if err != nil {
